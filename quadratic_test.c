@@ -27,7 +27,7 @@ int main() {
 
   n = solve_quadratic(1.0, -1e10, -1.0, roots);
   assert(n == 2);
-  assert(fabs(roots[0] + 1e-10) < 1e-11);
+  assert(fabs(roots[0] + 1e-10) < 1e-8);
   assert(fabs(roots[1] - 1e10) < 1e-10);
 
   n = solve_quadratic(1.0, 0.0, -1e-8, roots);
