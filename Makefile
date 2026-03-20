@@ -11,14 +11,14 @@ all: $(OBJS) $(TESTS) $(RUN_TESTS)
 build_objs: $(OBJS)
 
 $(OBJS): %.o: %.c
-	clang -g -c $< -o $@
+	clang -g -c $< -o $@ -lm
 
 .PHONY: build_tests 
 build_tests: $(TESTS)
 
 $(TESTS): %_test: %_test.c %.o
-	clang -g -c $*_test.c -o $*_test.o
-	clang $*_test.o $*.o -o $*_test -static
+	clang -g -c $*_test.c -o $*_test.o -lm
+	clang $*_test.o $*.o -o $*_test -static -lm
 
 .PHONY: run_tests
 run_tests: $(RUN_TESTS)
