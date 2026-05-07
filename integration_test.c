@@ -1,6 +1,6 @@
 #include "integration.h"
 #include <assert.h>
-
+#include <math.h>
 double linear(double x) { return x; }
 double square(double x) { return x * x; }
 double constant(double x) { return 5.0; }
