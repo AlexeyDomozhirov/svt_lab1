@@ -1,7 +1,6 @@
 #include "quadratic.h"
 #include <assert.h>
 #include <math.h>
-
 void test_linear_no_solutions() {
   double roots[2];
   int n = solve_quadratic(0.0, 0.0, 1.0, roots);

@@ -1,5 +1,5 @@
 #include "quadratic.h"
-
+#include <math.h>
 int solve_quadratic(double a, double b, double c, double roots[2]) {
   if (fabs(a) < 1e-11) {
     return 0;
