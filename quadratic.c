@@ -1,8 +1,7 @@
 #include "quadratic.h"
-#include <math.h>
 
 int solve_quadratic(double a, double b, double c, double roots[2]) {
-  if (a == 0.0) {
+  if (fabs(a) < 1e-11) {
     return 0;
   }
 
@@ -14,9 +13,8 @@ int solve_quadratic(double a, double b, double c, double roots[2]) {
     roots[0] = -b / (2.0 * a);
     return 1;
   }
-  double sqrt_d = sqrt(d);
-  roots[0] = (-b - sqrt_d) / (2.0 * a);
-  roots[1] = (-b + sqrt_d) / (2.0 * a);
+  roots[0] = (-b - (b >= 0 ? 1 : -1) * sqrt(d)) / (2.0 * a);
+  roots[1] = c / roots[0];
 
   if (roots[0] > roots[1]) {
     double temp = roots[0];
