@@ -1,46 +1,41 @@
-OBJS=$(patsubst %.c, %.o, $(filter-out %_test.c, $(wildcard *.c)))
-TESTS=$(OBJS:.o=_test)
-RUN_TESTS=$(OBJS:.o=_run_test)
+SRC = $(filter-out %_test.c, $(wildcard *.c))
+OBJS = $(SRC:.c=.o)
+DEPS = $(OBJS:.o=.d)
+
+TEST_SRC = $(wildcard *_test.c)
+TEST_OBJS = $(TEST_SRC:.c=.o) 
+TEST_EXES = $(TEST_SRC:_test.c=_test)
+RUN_TESTS = $(addprefix run_, $(TEST_EXES))
+TEST_DEPS = $(TEST_SRC:.c=.d)
 
 .DEFAULT_GOAL := all
 
-.PHONY: all
-all: $(OBJS) $(TESTS) $(RUN_TESTS)
+%.o: %.c
+	clang -MMD -g -c $< -o $@
 
-.PHONY: build_objs 
-build_objs: $(OBJS)
+%_test: %_test.o %.o
+	clang $^ -o $@ -static
 
-$(OBJS): %.o: %.c
-	clang -g -c $< -o $@
+-include $(DEPS) $(TEST_DEPS)
 
-.PHONY: build_tests 
-build_tests: $(TESTS)
+$(RUN_TESTS): run_%: %
+	./$<
 
-$(TESTS): %_test: %_test.c %.o
-	clang -g -c $*_test.c -o $*_test.o
-	clang $*_test.o $*.o -o $*_test -static
+.PHONY: all run_tests clean
 
-.PHONY: run_tests
+all: $(OBJS) $(TEST_EXES)
+
 run_tests: $(RUN_TESTS)
 
-$(RUN_TESTS): %_run_test: %_test
-	./$*_test
+.PHONY: format_all check_format_all
 
-INTERMEDIATE_TEST_OBJS := $(OBJS:.o=_test.o)
+ALL_SOURCES = $(wildcard *.c *.h)
 
-.PHONY: clean
-clean: 
-	rm -f $(TESTS) $(INTERMEDIATE_TEST_OBJS)
-	rm -f $(OBJS)
+format_all:
+	clang-format -i $(ALL_SOURCES)
 
-FORMAT_FILES=$(OBJS:%.o=format_%)
-$(FORMAT_FILES): format_%:
-	clang-format -i $*.h $*.c $*_test.c
+check_format_all:
+	clang-format --dry-run -Werror $(ALL_SOURCES)
 
-format_all: $(FORMAT_FILES)
-
-CHECK_FORMAT=$(OBJS:%.o=check_format_%)
-$(CHECK_FORMAT): check_format_%:
-	clang-format --dry-run -Werror $*.h $*.c $*_test.c
-
-check_format_all: $(CHECK_FORMAT)
+clean:
+	rm -f $(OBJS) $(TEST_OBJS) $(TEST_EXES) $(DEPS) $(TEST_DEPS)
