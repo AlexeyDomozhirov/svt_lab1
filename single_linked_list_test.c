@@ -92,4 +92,3 @@ int main(void) {
   test_invalid_operations_and_null_safety();
   return 0;
 }
-
